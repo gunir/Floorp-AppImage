@@ -1,3 +1,5 @@
+Homepage: https://floorp.app
+
 To make it fully portable:
 
 `./floorp.AppImage --appimage-portable-home`
