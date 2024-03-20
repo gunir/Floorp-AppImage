@@ -7,7 +7,7 @@ wget "$(cat /tmp/version.json| jq -r '.[0].assets[].browser_download_url' | grep
 VERSION="$(cat /tmp/version.json| jq -r '.[0].tag_name')"
 
 APPDIR=AppDir
-echo "$VERSION" >> $GITHUB_ENV
+#echo "$VERSION" >> $GITHUB_ENV
 tar -xvf *.tar.* && rm -rf *.tar.*
 mv floorp/* $APPDIR/
 wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
