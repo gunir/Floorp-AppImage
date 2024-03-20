@@ -2,8 +2,8 @@
 
 set -eux
 curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/Floorp-Projects/Floorp/releases > /tmp/version.json
-cat /tmp/version.json| jq '.[0].assets[].browser_download_url' | grep tsetup | grep linux-x86_64.tar.bz2
-wget "$(cat /tmp/version.json| jq -r '.[0].assets[].browser_download_url' | grep tsetup | grep linux-x86_64.tar.bz2)"
+cat /tmp/version.json| jq '.[0].assets[].browser_download_url' | grep floorp | grep linux-x86_64.tar.bz2
+wget "$(cat /tmp/version.json| jq -r '.[0].assets[].browser_download_url' | grep floorp | grep linux-x86_64.tar.bz2)"
 VERSION="$(cat /tmp/version.json| jq -r '.[0].tag_name')"
 
 APPDIR=AppDir
