@@ -12,6 +12,7 @@ tar -xvf *.tar.* && rm -rf *.tar.*
 mv floorp/* $APPDIR/
 wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
 chmod +x *.AppImage
+chmod +x ./AppDir/AppRun
 echo "AppDir: $APPDIR"
 ls -al
 ls -al "$APPDIR"
