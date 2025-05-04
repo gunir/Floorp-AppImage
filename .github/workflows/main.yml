@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: "0 16 1/7 * *"
   workflow_dispatch:
+
 permissions: write-all
 
 jobs:
