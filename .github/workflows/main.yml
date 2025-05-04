@@ -1,5 +1,8 @@
 name: Release
-on: workflow_dispatch
+on: 
+    workflow_dispatch
+    schedule:
+        - cron: '22 2 * * 6' # At 02:22, only on Saturday
 permissions: write-all
 
 
