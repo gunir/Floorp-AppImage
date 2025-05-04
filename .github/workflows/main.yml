@@ -1,29 +1,29 @@
 name: Release
-on: 
-    workflow_dispatch
-    schedule:
-        - cron: '22 2 * * 6' # At 02:22, only on Saturday
-permissions: write-all
+on:
+  schedule:
+    - cron: "0 16 1/7 * *"
+  workflow_dispatch:
 
+permissions: write-all
 
 jobs:
   AppImage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: fuse
       run: |
           sudo apt-get update
-          sudo apt-get -y install libfuse2
+          sudo apt-get -y install libfuse2 zsync desktop-file-utils
     - name: Download Binary
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         chmod +x build.sh
         ./build.sh
-        
+
     - name: Upload artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: floorp.AppImage
         path: 'dist'
@@ -37,4 +37,3 @@ jobs:
         files: |
           dist/
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-

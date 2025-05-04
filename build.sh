@@ -1,21 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 
 set -eux
-curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/Floorp-Projects/Floorp/releases > /tmp/version.json
-cat /tmp/version.json| jq '.[0].assets[].browser_download_url' | grep floorp | grep linux-x86_64.tar.bz2
-wget "$(cat /tmp/version.json| jq -r '.[0].assets[].browser_download_url' | grep floorp | grep linux-x86_64.tar.bz2)"
-VERSION="$(cat /tmp/version.json| jq -r '.[0].tag_name')"
+export ARCH="$(uname -m)"
+export APPIMAGE_EXTRACT_AND_RUN=1
+APPDIR="$(realpath ./AppDir)"
+APPIMAGETOOL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-"$ARCH".AppImage"
+UPINFO="gh-releases-zsync|$(echo $GITHUB_REPOSITORY | tr '/' '|')|latest|*$ARCH.AppImage.zsync"
 
-APPDIR=AppDir
-#echo "$VERSION" >> $GITHUB_ENV
-tar -xvf *.tar.* && rm -rf *.tar.*
-mv floorp/* $APPDIR/
-wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-chmod +x *.AppImage
-chmod +x ./AppDir/AppRun
+FLOORP_URL="$(wget -q https://api.github.com/repos/floorp-Projects/Floorp/releases/latest -O - \
+	| sed 's/[()",{} ]/\n/g' | grep -oi "https.*linux-$ARCH.tar.bz2$" | head -1)"
+VERSION="$(echo $FLOORP_URL | awk -F"/" '{print $(NF-1)}')"
+
+wget --retry-connrefused --tries=30 "$FLOORP_URL"
+wget --retry-connrefused --tries=30 "$APPIMAGETOOL" -O ./appimagetool
+tar -xvf *.tar.* && rm -f *.tar.*
+mv floorp/* "$APPDIR"/
+chmod +x ./AppDir/AppRun ./appimagetool
 echo "AppDir: $APPDIR"
 ls -al
 ls -al "$APPDIR"
-ARCH=x86_64 ./appimagetool-x86_64.AppImage --comp gzip "$APPDIR" floorp.AppImage
+./appimagetool --comp zstd \
+	--mksquashfs-opt -Xcompression-level --mksquashfs-opt 22 \
+	-n -u "$UPINFO" "$APPDIR" floorp-"$VERSION"-"$ARCH".AppImage
 mkdir dist
-mv floorp.AppImage* dist/.
+mv *.AppImage* dist/.
